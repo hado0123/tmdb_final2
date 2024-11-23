@@ -1,32 +1,54 @@
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchMovieCredits } from '../../features/movies/moviesSlice'
+import { useParams } from 'react-router-dom'
+
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Pagination } from 'swiper/modules'
+import { Scrollbar, Autoplay } from 'swiper/modules'
 
 import 'swiper/css'
-import 'swiper/css/pagination'
+import 'swiper/css/scrollbar'
 import '../css/CreditsSlider.css'
 
 function CreditsSlider() {
+   const { movieId } = useParams()
+   const dispatch = useDispatch()
+   const { movieCredits, loading, error } = useSelector((state) => state.movies)
+
+   useEffect(() => {
+      if (movieId) {
+         dispatch(fetchMovieCredits(movieId))
+      }
+   }, [dispatch, movieId])
+
+   if (loading) return <p>Loading...</p>
+   if (error) return <p>Error: {error}</p>
+
    return (
       <div className="common_margin_tb">
          <h2>출연배우</h2>
          <Swiper
-            slidesPerView={3}
+            slidesPerView={5}
             spaceBetween={30}
-            pagination={{
-               clickable: true,
+            scrollbar={{
+               hide: false,
             }}
-            modules={[Pagination]}
+            autoplay={{
+               delay: 3000,
+               disableOnInteraction: false,
+            }}
+            modules={[Scrollbar, Autoplay]}
             className="mySwiper"
          >
-            <SwiperSlide>Slide 1</SwiperSlide>
-            <SwiperSlide>Slide 2</SwiperSlide>
-            <SwiperSlide>Slide 3</SwiperSlide>
-            <SwiperSlide>Slide 4</SwiperSlide>
-            <SwiperSlide>Slide 5</SwiperSlide>
-            <SwiperSlide>Slide 6</SwiperSlide>
-            <SwiperSlide>Slide 7</SwiperSlide>
-            <SwiperSlide>Slide 8</SwiperSlide>
-            <SwiperSlide>Slide 9</SwiperSlide>
+            {movieCredits &&
+               movieCredits.cast.map((cast) => (
+                  <SwiperSlide key={cast.id}>
+                     <div style={{ padding: 20 }}>
+                        <img src={cast.profile_path ? `https://image.tmdb.org/t/p/w400${cast.profile_path}` : '/images/person.png'} alt={cast.name} />
+                        <p style={{ fontWeight: 'bold' }}>{cast.name}</p>
+                     </div>
+                  </SwiperSlide>
+               ))}
          </Swiper>
       </div>
    )
