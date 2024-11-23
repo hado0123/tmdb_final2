@@ -49,4 +49,16 @@ export const getMovieCredits = async (movieId) => {
    return response
 }
 
+// API를 통해 영화목록을 가져오는 함수
+export const getMovies = async (category = 'popular', page = 1) => {
+   const response = await tmdbApi.get(`/movie/${category}`, {
+      params: {
+         language: 'ko-KR',
+         page,
+         region: 'KR',
+      },
+   })
+   return response
+}
+
 export default tmdbApi
