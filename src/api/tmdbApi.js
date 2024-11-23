@@ -27,4 +27,26 @@ export const searchMovie = async (query, page = 1) => {
    return response
 }
 
+export const getMovieDetails = async (movieId) => {
+   //https://api.themoviedb.org/3/movie/159189?language=ko-KR
+   const response = await tmdbApi.get(`/movie/${movieId}`, {
+      params: {
+         language: 'ko-KR',
+      },
+   })
+
+   return response
+}
+
+export const getMovieCredits = async (movieId) => {
+   //https://api.themoviedb.org/3/movie/159189/credits?language=ko-KR
+   const response = await tmdbApi.get(`/movie/${movieId}/credits`, {
+      params: {
+         language: 'ko-KR',
+      },
+   })
+
+   return response
+}
+
 export default tmdbApi
