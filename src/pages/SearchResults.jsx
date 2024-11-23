@@ -1,5 +1,5 @@
 // 검색결과
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchSearchResults } from '../features/movies/moviesSlice'
@@ -33,10 +33,10 @@ function SearchResults() {
       }
    }, [page, dispath, query])
 
-   const loadMore = () => {
+   const loadMore = useCallback(() => {
       // 더보기 누를때마다 page state 가 1씩 증가
       setPage((prevPage) => prevPage + 1)
-   }
+   }, [])
 
    if (loading && page === 1) {
       return (

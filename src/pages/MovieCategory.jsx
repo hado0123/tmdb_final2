@@ -1,5 +1,5 @@
 // 인기영화, 현재 상영중 영화, 개봉예정 영화
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchMovies } from '../features/movies/moviesSlice'
 
@@ -53,13 +53,38 @@ function MovieCategory({ category }) {
    // 2번 useEffect
    useEffect(() => {
       dispath(fetchMovies({ category, page: page[category] }))
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [dispath, page])
 
-   const loadMore = () => {
+   const loadMore = useCallback(() => {
       setPage((prevPage) => ({
          ...prevPage,
          [category]: prevPage[category] + 1, // prevPage.category + 1
       }))
+   }, [category])
+
+   if (loading && page === 1) {
+      return (
+         <Wrap>
+            <Menu />
+            <Main>
+               <h2>Loading...</h2>
+            </Main>
+            <Footer />
+         </Wrap>
+      )
+   }
+
+   if (error) {
+      return (
+         <Wrap>
+            <Menu />
+            <Main>
+               <h2>Error: {error}</h2>
+            </Main>
+            <Footer />
+         </Wrap>
+      )
    }
 
    return (
