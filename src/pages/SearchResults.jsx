@@ -9,6 +9,7 @@ import { Wrap, Main } from '../styles/StyledComponent'
 import Menu from '../components/Menu'
 import Footer from '../components/Footer'
 import MovieCard from '../components/MovieCard'
+import Button from '@mui/material/Button'
 
 function SearchResults() {
    const [searchParams] = useSearchParams() //query 파라미터 값 가져오기
@@ -18,9 +19,24 @@ function SearchResults() {
    const dispath = useDispatch()
    const { searchResults, loading, error } = useSelector((state) => state.movies)
 
+   // 맨 처음에 검색할때 1페이지 데이터를 가져옴
    useEffect(() => {
       dispath(fetchSearchResults({ query, page: 1 }))
-   }, [dispath])
+   }, [dispath, query])
+
+   // page가 변경될때 마다 새로운 결과를 로딩
+   // 더보기 버튼 클릭 -> page state가 변경 -> fetchSearchResults(..) 실행
+   useEffect(() => {
+      //2페이지 부터 실행 (useEffect는 사이트 들어왔을때 무조건 최초로 1번 실행하므로 위에 useEffect와 같이 실행되는 것 방지)
+      if (page > 1) {
+         dispath(fetchSearchResults({ query, page }))
+      }
+   }, [page, dispath, query])
+
+   const loadMore = () => {
+      // 더보기 누를때마다 page state 가 1씩 증가
+      setPage((prevPage) => prevPage + 1)
+   }
 
    if (loading && page === 1) {
       return (
@@ -50,7 +66,25 @@ function SearchResults() {
       <Wrap>
          <Menu />
          <Main $padding="30px 0">
-            <MovieCard movies={searchResults} />
+            {/* 검색 결과에 따른 렌더링 처리 */}
+            {searchResults.length > 0 ? (
+               <>
+                  <MovieCard movies={searchResults} />
+                  <Button
+                     variant="outlined"
+                     sx={{
+                        margin: '20px auto',
+                        display: 'block',
+                        width: '500px',
+                     }}
+                     onClick={loadMore}
+                  >
+                     더보기
+                  </Button>
+               </>
+            ) : (
+               <h2>검색 결과가 없습니다.</h2>
+            )}
          </Main>
          <Footer />
       </Wrap>
